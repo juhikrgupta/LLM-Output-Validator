@@ -12,12 +12,14 @@ export default function Home() {
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [failures, setFailures] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedSchema, setSelectedSchema] =
   useState("user");
 
   useEffect(() => {
     fetchHistory();
+    fetchFailures();
   }, []);
 
   async function fetchHistory() {
@@ -31,6 +33,21 @@ export default function Home() {
     }
   }
 
+  async function fetchFailures() {
+
+  try {
+
+    const res = await fetch("/api/failures");
+
+    const data = await res.json();
+
+    setFailures(data.failures || []);
+
+  } catch (error) {
+
+    console.error(error);
+  }
+}
   async function handleSubmit() {
     try {
       setLoading(true);
@@ -128,7 +145,7 @@ export default function Home() {
         <div className="mt-10">
 
           <h2 className="text-2xl font-bold mb-4">
-            Validation History
+           History Section
           </h2>
 
           <div className="space-y-4">
@@ -175,7 +192,41 @@ export default function Home() {
     ))}
   </div>
 </div>
+{/* FAILURE ANALYSIS */}
 
+<div className="mt-10">
+
+  <h2 className="text-3xl font-bold mb-6 text-red-400">
+    Failure Analysis
+  </h2>
+
+  <div className="space-y-6">
+
+    {failures.map((item: any, index: number) => (
+
+      <div
+        key={index}
+        className="border border-red-500 rounded-xl p-5 bg-red-950"
+      >
+
+        <p className="text-yellow-300 font-semibold mb-2">
+          Prompt:
+        </p>
+
+        <p className="mb-4 text-white">
+          {item.prompt}
+        </p>
+
+        <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-red-300">
+{JSON.stringify(item.response, null, 2)}
+        </pre>
+
+      </div>
+    ))}
+
+  </div>
+
+</div>
           </div>
 
         </div>

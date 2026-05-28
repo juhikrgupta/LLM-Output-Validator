@@ -1,6 +1,6 @@
-import { UserSchema } from "@/app/schemas/userSchema";
-import { EmployeeSchema } from "@/app/schemas/employeeSchema";
-import { ProductSchema } from "@/app/schemas/productSchema";
+import { UserSchema } from "@/app/schema/userSchema";
+import { EmployeeSchema } from "@/app/schema/employeeSchema";
+import { ProductSchema } from "@/app/schema/productSchema";
 
 export const schemaRegistry = {
   user: UserSchema,
