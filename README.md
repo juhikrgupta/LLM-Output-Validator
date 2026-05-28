@@ -321,4 +321,4 @@ This project demonstrates how middleware validation layers can improve productio
 
 ## Homepage in Dark/Light Mode
 
-![Light Theme](./public/screenshots/homepaeLight.png)
+![Light Theme](./public/screenshots/homepageLight.png)
