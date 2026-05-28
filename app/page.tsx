@@ -27,6 +27,9 @@ export default function Home() {
 
   const [history, setHistory] =
     useState<any[]>([]);
+  const [metrics, setMetrics] =
+  useState<any>(null);
+  
 
   const [failures, setFailures] =
     useState<any[]>([]);
@@ -43,6 +46,7 @@ export default function Home() {
     fetchHistory();
 
     fetchFailures();
+    fetchMetrics();
 
   }, []);
 
@@ -93,6 +97,24 @@ export default function Home() {
     }
   }
 
+  async function fetchMetrics() {
+
+  try {
+
+    const res =
+      await fetch("/api/metrics");
+
+    const data =
+      await res.json();
+
+    setMetrics(data);
+
+  } catch (error) {
+
+    console.error(error);
+  }
+}
+
   async function handleSubmit() {
 
     try {
@@ -126,6 +148,7 @@ export default function Home() {
       fetchHistory();
 
       fetchFailures();
+      fetchMetrics();
 
     } catch (error) {
 
@@ -197,7 +220,70 @@ export default function Home() {
         {response && (
           <ResponseCard data={response} />
         )}
+        {metrics && (
 
+  <div className="mt-10">
+
+    <h2 className="text-3xl font-bold mb-6">
+      Metrics Dashboard
+    </h2>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+        <p className="text-gray-400">
+          Total Validations
+        </p>
+
+        <h3 className="text-4xl font-bold text-yellow-300 mt-2">
+          {metrics.total}
+        </h3>
+      </div>
+
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+        <p className="text-gray-400">
+          Success Rate
+        </p>
+
+        <h3 className="text-4xl font-bold text-green-400 mt-2">
+          {metrics.successRate}%
+        </h3>
+      </div>
+
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+        <p className="text-gray-400">
+          Failures
+        </p>
+
+        <h3 className="text-4xl font-bold text-red-400 mt-2">
+          {metrics.failureCount}
+        </h3>
+      </div>
+
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+        <p className="text-gray-400">
+          Auto Corrections
+        </p>
+
+        <h3 className="text-4xl font-bold text-blue-400 mt-2">
+          {metrics.correctionCount}
+        </h3>
+      </div>
+
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 md:col-span-2">
+        <p className="text-gray-400">
+          Average Latency
+        </p>
+
+        <h3 className="text-4xl font-bold text-pink-400 mt-2">
+          {metrics.averageLatency}
+        </h3>
+      </div>
+
+    </div>
+
+  </div>
+)}
         {/* VALIDATION HISTORY */}
 
         <div className="mt-10">
