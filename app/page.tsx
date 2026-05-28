@@ -27,6 +27,11 @@ export default function Home() {
 
   const [history, setHistory] =
     useState<any[]>([]);
+
+  const [selectedHistory,
+  setSelectedHistory] =
+    useState<string[]>([]);
+
   const [metrics, setMetrics] =
   useState<any>(null);
   
@@ -144,6 +149,37 @@ const [randomTip] =
     console.error(error);
   }
 }
+
+  async function deleteSelected() {
+
+  try {
+
+    await fetch("/api/history", {
+
+      method: "DELETE",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
+      body: JSON.stringify({
+
+        ids:
+          selectedHistory,
+      }),
+    });
+
+    setSelectedHistory([]);
+
+    fetchHistory();
+
+  } catch (error) {
+
+    console.error(error);
+  }
+}
+
 
   async function handleSubmit() {
 
@@ -405,9 +441,25 @@ const [randomTip] =
 
         <div className="mt-10">
 
-          <h2 className="text-3xl font-bold mb-6">
-            Validation History
-          </h2>
+<div className="flex items-center justify-between mb-6">
+
+  <h2 className="text-3xl font-bold">
+    Validation History
+  </h2>
+
+  {selectedHistory.length > 0 && (
+
+    <button
+
+      onClick={deleteSelected}
+
+      className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-white font-semibold"
+    >
+      Delete Selected
+    </button>
+  )}
+
+</div>
 
           <div className="space-y-6">
 
@@ -417,13 +469,48 @@ const [randomTip] =
                 index: number
               ) => (
 
-                <div
+ <div
 
-                  key={index}
+  key={index}
 
-                  className="border border-gray-700 rounded-xl p-5 bg-[#111]"
-                >
+  className="border border-gray-700 rounded-xl p-5 bg-[#111]"
+>
 
+  <div className="flex justify-end mb-3">
+
+    <input
+
+      type="checkbox"
+
+      checked={selectedHistory.includes(
+        item._id
+      )}
+
+      onChange={(e) => {
+
+        if (e.target.checked) {
+
+          setSelectedHistory([
+            ...selectedHistory,
+            item._id,
+          ]);
+
+        } else {
+
+          setSelectedHistory(
+
+            selectedHistory.filter(
+              (id) =>
+                id !== item._id
+            )
+          );
+        }
+      }}
+
+      className="w-5 h-5"
+    />
+
+  </div>
                   <div className="space-y-2 mb-4">
 
                     <p>

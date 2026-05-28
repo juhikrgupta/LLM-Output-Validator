@@ -29,3 +29,43 @@ export async function GET() {
     });
   }
 }
+
+export async function DELETE(
+  req: Request
+) {
+
+  try {
+
+    await connectDB();
+
+    const body =
+      await req.json();
+
+    const ids =
+      body.ids || [];
+
+    await Validation.deleteMany({
+
+      _id: {
+        $in: ids,
+      },
+    });
+
+    return NextResponse.json({
+
+      success: true,
+    });
+
+  } catch (error: any) {
+
+    console.log(error);
+
+    return NextResponse.json({
+
+      success: false,
+
+      message:
+        error.message,
+    });
+  }
+}
