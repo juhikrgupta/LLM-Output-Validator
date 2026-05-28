@@ -12,6 +12,9 @@ const ValidationSchema =
         type: String,
       },
 
+      strategy: {
+        type: String,
+      },
       response: {
         type: Object,
       },

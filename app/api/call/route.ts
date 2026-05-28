@@ -64,6 +64,8 @@ export async function POST(req: Request) {
 
     const schema =
       body.schema || "user";
+    const strategy =
+      body.strategy || "json";
 
     const selectedSchema =
       schemaRegistry[
@@ -88,12 +90,41 @@ export async function POST(req: Request) {
           {
             role: "user",
 
-            content: `
-Return ONLY valid JSON.
+content:
 
-Format example:
+strategy === "json"
+
+? `
+
+Respond ONLY with valid JSON matching this schema.
+
+Schema Example:
 
 ${getSchemaExample(schema)}
+
+Prompt:
+
+${prompt}
+`
+
+: strategy === "fewshot"
+
+? `
+
+Here is an example of correctly formatted output:
+
+${getSchemaExample(schema)}
+
+Follow the same structure exactly.
+
+Prompt:
+
+${prompt}
+`
+
+: `
+
+Return valid structured JSON.
 
 Prompt:
 
@@ -211,6 +242,7 @@ Return ONLY corrected valid JSON.
         prompt,
 
         schema,
+        strategy,
 
         response:
           validated.data,
