@@ -1,11 +1,25 @@
-import { UserSchema } from "@/app/schema/userSchema";
-import { EmployeeSchema } from "@/app/schema/employeeSchema";
-import { ProductSchema } from "@/app/schema/productSchema";
+import { z } from "zod";
 
 export const schemaRegistry = {
-  user: UserSchema,
+  user: z.object({
+    name: z.string(),
+    age: z.number(),
+    email: z.string().email(),
+    skills: z.array(z.string()),
+  }),
 
-  product: ProductSchema,
+  product: z.object({
+    productName: z.string(),
+    price: z.number(),
+    category: z.string(),
+    inStock: z.boolean(),
+  }),
 
-  employee: EmployeeSchema,
+  employee: z.object({
+    name: z.string(),
+    age: z.number(),
+    department: z.string(),
+    salary: z.number(),
+    isActive: z.boolean(),
+  }),
 };

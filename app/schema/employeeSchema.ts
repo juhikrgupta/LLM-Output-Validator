@@ -1,11 +1,9 @@
 import { z } from "zod";
 
-export const EmployeeSchema = z.object({
+export const employeeSchema = z.object({
   name: z.string(),
-
+  age: z.number(),
   department: z.string(),
-
   salary: z.number(),
-
-  skills: z.array(z.string()),
+  isActive: z.boolean(),
 });

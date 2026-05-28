@@ -1,237 +1,211 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 
-import PromptBox from "../components/PromptBox";
-import ResponseCard from "../components/ResponseCard";
-import ErrorCard from "../components/ErrorCard";
-import Loader from "../components/Loader";
-import ThemeToggle from "../components/ThemeToggle";
+import PromptBox
+from "@/components/PromptBox";
+
+import ResponseCard
+from "@/components/ResponseCard";
+
+import Loader
+from "@/components/Loader";
+
+import ThemeToggle
+from "@/components/ThemeToggle";
 
 export default function Home() {
-  const [prompt, setPrompt] = useState("");
-  const [response, setResponse] = useState<any>(null);
-  const [history, setHistory] = useState<any[]>([]);
-  const [failures, setFailures] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedSchema, setSelectedSchema] =
-  useState("user");
+
+  const [prompt, setPrompt] =
+    useState("");
+
+  const [response, setResponse] =
+    useState<any>(null);
+
+  const [history, setHistory] =
+    useState<any[]>([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [selectedSchema,
+    setSelectedSchema] =
+      useState("user");
 
   useEffect(() => {
     fetchHistory();
-    fetchFailures();
   }, []);
 
   async function fetchHistory() {
+
     try {
-      const res = await fetch("/api/history");
-      const data = await res.json();
+
+      const res =
+        await fetch("/api/history");
+
+      const data =
+        await res.json();
 
       setHistory(data);
+
     } catch (error) {
+
       console.error(error);
     }
   }
 
-  async function fetchFailures() {
-
-  try {
-
-    const res = await fetch("/api/failures");
-
-    const data = await res.json();
-
-    setFailures(data.failures || []);
-
-  } catch (error) {
-
-    console.error(error);
-  }
-}
   async function handleSubmit() {
+
     try {
+
       setLoading(true);
 
-      const res = await fetch("/api/call", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt,
-          schema: selectedSchema,
-}),
-      });
+      const res =
+        await fetch("/api/call", {
 
-      const data = await res.json();
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+
+            prompt,
+
+            schema:
+              selectedSchema,
+          }),
+        });
+
+      const data =
+        await res.json();
 
       setResponse(data);
 
-      // refresh history
       fetchHistory();
 
     } catch (error) {
+
       console.error(error);
 
-      setResponse({
-        success: false,
-        message: "Something went wrong",
-      });
-
     } finally {
+
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
+
+    <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white p-10">
+
       <div className="max-w-4xl mx-auto">
 
-        <h1 className="text-5xl font-bold mb-3">
+        <h1 className="text-5xl font-bold mb-4">
           LLM Output Validator
         </h1>
+
         <div className="mb-6">
           <ThemeToggle />
         </div>
-        <p className="text-zinc-400 mb-8">
-          Validate AI responses using Zod schemas.
-        </p>
 
-        <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
+        <PromptBox
+          prompt={prompt}
+          setPrompt={setPrompt}
+        />
 
-          <PromptBox
-  prompt={prompt}
-  setPrompt={setPrompt}
-/>
+        <select
 
-<select
-  value={selectedSchema}
-  onChange={(e) =>
-    setSelectedSchema(e.target.value)
-  }
-  className="mt-4 w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white"
->
-  <option value="user">
-    User Schema
-  </option>
+          value={selectedSchema}
 
-  <option value="product">
-    Product Schema
-  </option>
+          onChange={(e) =>
+            setSelectedSchema(
+              e.target.value
+            )
+          }
 
-  <option value="employee">
-    Employee Schema
-  </option>
-</select>
+          className="mt-4 w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white"
+        >
 
-<button
-  onClick={handleSubmit}
-  className="mt-5 px-6 py-3 bg-yellow-200 text-black rounded-xl font-semibold hover:opacity-90"
->
-  Validate Output
-</button>
-          {loading && <Loader />}
+          <option value="user">
+            User Schema
+          </option>
 
-        </div>
+          <option value="product">
+            Product Schema
+          </option>
 
-        {/* Current Response */}
+          <option value="employee">
+            Employee Schema
+          </option>
+
+        </select>
+
+        <button
+
+          onClick={handleSubmit}
+
+          className="mt-5 px-6 py-3 bg-yellow-300 text-black rounded-xl font-bold"
+        >
+          Validate Output
+        </button>
+
+        {loading && <Loader />}
 
         {response && (
-  <ResponseCard data={response} />
-)}
-
-        {/* Validation History */}
+          <ResponseCard data={response} />
+        )}
 
         <div className="mt-10">
 
-          <h2 className="text-2xl font-bold mb-4">
-           History Section
+          <h2 className="text-3xl font-bold mb-6">
+            Validation History
           </h2>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
 
-            <div className="mt-10">
-  <h2 className="text-3xl font-bold mb-6">
-    Validation History
-  </h2>
+            {history.map(
+              (item: any, index: number) => (
 
-  <div className="space-y-6">
-    {history.map((item: any, index: number) => (
-      <div
-        key={index}
-        className="border border-gray-700 rounded-xl p-5 bg-[#111]"
-      >
-        <p className="text-yellow-300 font-semibold mb-2">
-          Prompt:
-        </p>
+                <div
 
-        <p className="mb-4 text-gray-300">
-          {item.prompt}
-        </p>
+                  key={index}
 
-        <p
-          className={`font-bold mb-3 ${
-            item.success
-              ? "text-green-400"
-              : "text-red-400"
-          }`}
-        >
-          {item.success
-            ? "Valid Response"
-            : "Validation Error"}
-        </p>
+                  className="border border-gray-700 rounded-xl p-5 bg-[#111]"
+                >
 
-        <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-green-300">
-          {JSON.stringify(item.response, null, 2)}
-        </pre>
+                  <p className="text-yellow-300 font-semibold mb-2">
+                    Prompt:
+                  </p>
 
-        <p className="text-gray-500 text-sm mt-3">
-          {new Date(item.createdAt).toLocaleString()}
-        </p>
-      </div>
-    ))}
-  </div>
-</div>
-{/* FAILURE ANALYSIS */}
+                  <p className="mb-4 text-gray-300">
+                    {item.prompt}
+                  </p>
 
-<div className="mt-10">
+                  <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-green-300">
 
-  <h2 className="text-3xl font-bold mb-6 text-red-400">
-    Failure Analysis
-  </h2>
+                    {JSON.stringify(
+                      item.response,
+                      null,
+                      2
+                    )}
 
-  <div className="space-y-6">
+                  </pre>
 
-    {failures.map((item: any, index: number) => (
+                </div>
+              )
+            )}
 
-      <div
-        key={index}
-        className="border border-red-500 rounded-xl p-5 bg-red-950"
-      >
-
-        <p className="text-yellow-300 font-semibold mb-2">
-          Prompt:
-        </p>
-
-        <p className="mb-4 text-white">
-          {item.prompt}
-        </p>
-
-        <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-red-300">
-{JSON.stringify(item.response, null, 2)}
-        </pre>
-
-      </div>
-    ))}
-
-  </div>
-
-</div>
           </div>
 
         </div>
 
       </div>
+
     </main>
   );
 }

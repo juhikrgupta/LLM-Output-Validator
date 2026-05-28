@@ -1,15 +1,22 @@
 import mongoose from "mongoose";
 
-const ValidationSchema = new mongoose.Schema({
-  prompt: String,
-  response: Object,
-  success: Boolean,
-  attempts: Number,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+const ValidationSchema =
+  new mongoose.Schema({
 
-export default mongoose.models.Validation ||
-  mongoose.model("Validation", ValidationSchema);
+    prompt: String,
+
+    response: Object,
+
+    success: Boolean,
+
+  }, {
+    timestamps: true,
+  });
+
+export default
+  mongoose.models.Validation ||
+
+  mongoose.model(
+    "Validation",
+    ValidationSchema
+  );

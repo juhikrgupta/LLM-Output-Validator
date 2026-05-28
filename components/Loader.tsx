@@ -1,7 +1,9 @@
 export default function Loader() {
+
   return (
-    <div className="text-yellow-400 mt-4 animate-pulse">
-      Validating AI response...
+
+    <div className="mt-5 text-yellow-300">
+      Validating...
     </div>
   );
 }
