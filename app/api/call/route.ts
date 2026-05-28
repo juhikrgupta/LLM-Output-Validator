@@ -5,16 +5,18 @@ import connectDB from "@/lib/mongodb";
 import Validation from "@/database/Validation";
 
 export async function POST(req: Request) {
+
   try {
-    // connect database
+
     await connectDB();
 
-    // get prompt from frontend
     const body = await req.json();
+
     const prompt = body.prompt;
 
-    // call AI model
+    // CALL AI
     const completion = await openrouter.chat.completions.create({
+
       model: "openai/gpt-3.5-turbo",
 
       messages: [
@@ -38,56 +40,72 @@ ${prompt}
       ],
     });
 
-    // get AI response
+    // GET RESPONSE
     const output = completion.choices[0].message.content;
 
-    // clean markdown
+    // CLEAN RESPONSE
     const cleaned = output
       ?.replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    // convert string to JSON
+    // PARSE JSON
     const parsed = JSON.parse(cleaned || "{}");
 
-    // validate using zod
+    // VALIDATE
     const validated = UserSchema.safeParse(parsed);
 
-    // validation failed
-    if (!validated.success) {
+    // VALID RESPONSE
+    if (validated.success) {
 
-      const formattedErrors = validated.error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        message: issue.message,
-        expected: (issue as any).expected,
-        received: (issue as any).received,
-      }));
-
-      // save failed validation
       await Validation.create({
+
         prompt,
-        response: formattedErrors,
-        success: false,
+
+        response: validated.data,
+
+        success: true,
       });
 
       return NextResponse.json({
-        success: false,
-        type: "validation",
-        errors: formattedErrors,
+
+        success: true,
+
+        data: validated.data,
       });
     }
 
-    // save successful validation
+    // INVALID RESPONSE
+    const formattedErrors = validated.error.issues.map((issue) => ({
+
+      field: issue.path.join("."),
+
+      message: issue.message,
+
+      expected: (issue as any).expected,
+
+      received: (issue as any).received,
+    }));
+
     await Validation.create({
+
       prompt,
-      response: validated.data,
-      success: true,
+
+      response: {
+        invalidData: parsed,
+        errors: formattedErrors,
+      },
+
+      success: false,
     });
 
-    // return success response
     return NextResponse.json({
-      success: true,
-      data: validated.data,
+
+      success: false,
+
+      invalidData: parsed,
+
+      errors: formattedErrors,
     });
 
   } catch (error: any) {
@@ -95,7 +113,9 @@ ${prompt}
     console.log(error);
 
     return NextResponse.json({
+
       success: false,
+
       message: error.message,
     });
   }

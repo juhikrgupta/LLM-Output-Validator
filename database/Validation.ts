@@ -4,6 +4,7 @@ const ValidationSchema = new mongoose.Schema({
   prompt: String,
   response: Object,
   success: Boolean,
+  attempts: Number,
   createdAt: {
     type: Date,
     default: Date.now,

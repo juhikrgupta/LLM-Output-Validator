@@ -93,12 +93,8 @@ export default function Home() {
         {/* Current Response */}
 
         {response && (
-          response.success ? (
-            <ResponseCard data={response.data} />
-          ) : (
-            <ErrorCard error={response} />
-          )
-        )}
+  <ResponseCard data={response} />
+)}
 
         {/* Validation History */}
 
