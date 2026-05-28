@@ -7,7 +7,6 @@ export default function ThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <NextThemesProvider
       attribute="class"

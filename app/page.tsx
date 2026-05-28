@@ -13,6 +13,8 @@ export default function Home() {
   const [response, setResponse] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedSchema, setSelectedSchema] =
+  useState("user");
 
   useEffect(() => {
     fetchHistory();
@@ -38,7 +40,10 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          prompt,
+          schema: selectedSchema,
+}),
       });
 
       const data = await res.json();
@@ -78,17 +83,36 @@ export default function Home() {
         <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6">
 
           <PromptBox
-            prompt={prompt}
-            setPrompt={setPrompt}
-          />
+  prompt={prompt}
+  setPrompt={setPrompt}
+/>
 
-          <button
-            onClick={handleSubmit}
-            className="mt-5 px-6 py-3 bg-yellow-200 text-black rounded-xl font-semibold hover:opacity-90"
-          >
-            Validate Output
-          </button>
+<select
+  value={selectedSchema}
+  onChange={(e) =>
+    setSelectedSchema(e.target.value)
+  }
+  className="mt-4 w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white"
+>
+  <option value="user">
+    User Schema
+  </option>
 
+  <option value="product">
+    Product Schema
+  </option>
+
+  <option value="employee">
+    Employee Schema
+  </option>
+</select>
+
+<button
+  onClick={handleSubmit}
+  className="mt-5 px-6 py-3 bg-yellow-200 text-black rounded-xl font-semibold hover:opacity-90"
+>
+  Validate Output
+</button>
           {loading && <Loader />}
 
         </div>
@@ -141,7 +165,7 @@ export default function Home() {
         </p>
 
         <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-green-300">
-{JSON.stringify(item.response, null, 2)}
+          {JSON.stringify(item.response, null, 2)}
         </pre>
 
         <p className="text-gray-500 text-sm mt-3">
