@@ -41,6 +41,7 @@ function getSchemaExample(schema: string) {
   return "{}";
 }
 export async function POST(req: Request) {
+  const start = Date.now();
   try {
     await connectDB();
 
@@ -94,7 +95,7 @@ ${prompt}
     // VALIDATE RESPONSE
     const validated =
       selectedSchema.safeParse(parsed);
-
+    const latency = Date.now() - start;
     // SUCCESS
     if (validated.success) {
       await Validation.create({
@@ -106,10 +107,18 @@ ${prompt}
       });
 
       return NextResponse.json({
-        success: true,
 
-        data: validated.data,
-      });
+  success: true,
+
+  data: validated.data,
+
+  metrics: {
+    attempts: 1,
+    latency,
+    correctionNeeded: false,
+    status: "success",
+  },
+});
     }
 
     // VALIDATION FAILED
@@ -137,12 +146,20 @@ ${prompt}
     });
 
     return NextResponse.json({
-      success: false,
 
-      invalidData: parsed,
+  success: false,
 
-      errors: formattedErrors,
-    });
+  invalidData: parsed,
+
+  errors: formattedErrors,
+
+  metrics: {
+    attempts: 1,
+    latency,
+    correctionNeeded: true,
+    status: "failure",
+  },
+});
   } catch (error: any) {
     console.log(error);
 

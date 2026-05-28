@@ -76,6 +76,53 @@ export default function ResponseCard({ data }: Props) {
         </div>
       )}
 
+      {/* METRICS SECTION */}
+
+      {data?.metrics && (
+
+        <div className="mt-6 bg-zinc-900 border border-zinc-700 rounded-xl p-5">
+
+          <h2 className="text-yellow-300 text-2xl font-bold mb-4">
+            📊 Metrics
+          </h2>
+
+          <div className="space-y-2 text-white">
+
+            <p>
+              <span className="font-semibold text-yellow-200">
+                Attempts:
+              </span>{" "}
+              {data.metrics.attempts}
+            </p>
+
+            <p>
+              <span className="font-semibold text-yellow-200">
+                Latency:
+              </span>{" "}
+              {data.metrics.latency} ms
+            </p>
+
+            <p>
+              <span className="font-semibold text-yellow-200">
+                Correction Needed:
+              </span>{" "}
+              {data.metrics.correctionNeeded
+                ? "Yes"
+                : "No"}
+            </p>
+
+            <p>
+              <span className="font-semibold text-yellow-200">
+                Status:
+              </span>{" "}
+              {data.metrics.status}
+            </p>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
