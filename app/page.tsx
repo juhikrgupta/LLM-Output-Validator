@@ -40,6 +40,10 @@ export default function Home() {
   const [selectedSchema,
     setSelectedSchema] =
       useState("user");
+  
+  const [strategy,
+  setStrategy] =
+    useState("json");
 
   const tips = [
 
@@ -163,6 +167,8 @@ const [randomTip] =
 
             schema:
               selectedSchema,
+            strategy:
+              strategy,
           }),
         });
 
@@ -253,6 +259,30 @@ const [randomTip] =
           </option>
 
         </select>
+
+        <select
+
+  value={strategy}
+
+  onChange={(e) =>
+    setStrategy(
+      e.target.value
+    )
+  }
+
+  className="mt-4 w-full p-3 rounded-xl bg-zinc-900 border border-zinc-700 text-white"
+>
+
+  <option value="json">
+    JSON Instruction Strategy
+  </option>
+
+  <option value="fewshot">
+    Few-Shot Example Strategy
+  </option>
+
+</select>
+
         <div className="mt-5 bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
 
   <h2 className="text-2xl font-bold text-yellow-300 mb-4">
