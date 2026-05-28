@@ -290,3 +290,35 @@ The hardest schemas to enforce reliably are deeply nested objects and mixed-type
 Retry correction significantly improves reliability, but some prompts fundamentally cannot produce stable structured outputs without stricter provider-level function calling.
 
 This project demonstrates how middleware validation layers can improve production reliability for AI-powered systems.
+
+---
+
+# Screenshots
+
+---
+
+## Homepage
+
+![Homepage](./public/screenshots/homepage.png)
+
+## Valid Output
+
+![Valid Output](./public/screenshots/validationOutput.png)
+
+---
+
+## Validation History
+
+![Validation History](./public/screenshots/validationHistory.png)
+
+---
+
+## Metrics Dashboard
+
+![Metrics Dashboard](./public/screenshots/metricsDashboard.png)
+
+---
+
+## Homepage in Dark/Light Mode
+
+![Light Theme](./public/screenshots/homepaeLight.png)
