@@ -41,6 +41,32 @@ export default function Home() {
     setSelectedSchema] =
       useState("user");
 
+  const tips = [
+
+  "LLMs often generate invalid JSON when prompts are ambiguous.",
+
+  "Validation middleware prevents malformed AI outputs from breaking applications.",
+
+  "Retry correction improves structured output reliability significantly.",
+
+  "Few-shot prompting can improve first-attempt validation success.",
+
+  "Schema enforcement is critical in production AI systems.",
+
+  "Nested objects and enums are among the hardest outputs for LLMs to generate correctly.",
+];
+
+const [randomTip] =
+  useState(
+
+    tips[
+      Math.floor(
+        Math.random() *
+        tips.length
+      )
+    ]
+  );
+
   useEffect(() => {
 
     fetchHistory();
@@ -165,10 +191,32 @@ export default function Home() {
     <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white p-10">
 
       <div className="max-w-4xl mx-auto">
+      
+      <div className="mb-8 bg-[#111] border border-gray-700 rounded-xl p-5 shadow-lg">
 
-        <h1 className="text-5xl font-bold mb-4">
-          LLM Output Validator
-        </h1>
+  <h2 className="text-xl font-bold text-yellow-300 mb-3">
+    AI Reliability Tip
+  </h2>
+
+  <p className="text-gray-300 leading-relaxed">
+
+    {randomTip}
+
+  </p>
+
+</div>
+
+        <h1 className="text-5xl font-extrabold mb-2 bg-gradient-to-r from-yellow-300 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+
+  LLM Output Validator
+
+</h1>
+
+<p className="text-gray-400 mb-6 text-lg">
+
+  Reliable AI Output Validation Middleware
+
+</p>
 
         <div className="mb-6">
           <ThemeToggle />
@@ -205,6 +253,45 @@ export default function Home() {
           </option>
 
         </select>
+        <div className="mt-5 bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
+
+  <h2 className="text-2xl font-bold text-yellow-300 mb-4">
+    Schema Preview
+  </h2>
+
+  <pre className="text-sm text-green-300 overflow-x-auto">
+
+{selectedSchema === "user" && `
+{
+  "name": "string",
+  "age": "number",
+  "email": "string",
+  "skills": ["string"]
+}
+`}
+
+{selectedSchema === "product" && `
+{
+  "productName": "string",
+  "price": "number",
+  "category": "string",
+  "inStock": "boolean"
+}
+`}
+
+{selectedSchema === "employee" && `
+{
+  "name": "string",
+  "age": "number",
+  "department": "string",
+  "salary": "number",
+  "isActive": "boolean"
+}
+`}
+
+  </pre>
+
+</div>
 
         <button
 
@@ -230,7 +317,7 @@ export default function Home() {
 
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
         <p className="text-gray-400">
           Total Validations
         </p>
@@ -240,7 +327,7 @@ export default function Home() {
         </h3>
       </div>
 
-      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
         <p className="text-gray-400">
           Success Rate
         </p>
@@ -250,7 +337,7 @@ export default function Home() {
         </h3>
       </div>
 
-      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
         <p className="text-gray-400">
           Failures
         </p>
@@ -260,7 +347,7 @@ export default function Home() {
         </h3>
       </div>
 
-      <div className="bg-[#111] border border-gray-700 rounded-xl p-5">
+      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
         <p className="text-gray-400">
           Auto Corrections
         </p>
@@ -270,7 +357,7 @@ export default function Home() {
         </h3>
       </div>
 
-      <div className="bg-[#111] border border-gray-700 rounded-xl p-5 md:col-span-2">
+     <div className="bg-[#111] border border-gray-700 rounded-xl p-5 hover:scale-105 hover:shadow-2xl transition duration-300">
         <p className="text-gray-400">
           Average Latency
         </p>
