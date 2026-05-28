@@ -6,6 +6,7 @@ import PromptBox from "../components/PromptBox";
 import ResponseCard from "../components/ResponseCard";
 import ErrorCard from "../components/ErrorCard";
 import Loader from "../components/Loader";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function Home() {
   const [prompt, setPrompt] = useState("");
@@ -61,13 +62,15 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-10">
+    <main className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
       <div className="max-w-4xl mx-auto">
 
         <h1 className="text-5xl font-bold mb-3">
           LLM Output Validator
         </h1>
-
+        <div className="mb-6">
+          <ThemeToggle />
+        </div>
         <p className="text-zinc-400 mb-8">
           Validate AI responses using Zod schemas.
         </p>
