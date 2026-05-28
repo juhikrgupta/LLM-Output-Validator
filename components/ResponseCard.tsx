@@ -18,6 +18,34 @@ export default function ResponseCard({
             ✅ Valid Output
           </h2>
 
+          <div className="space-y-2 mb-5 text-sm">
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Attempts:
+              </span>{" "}
+              {data.attempts}
+            </p>
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Correction Needed:
+              </span>{" "}
+
+              {data.correctionNeeded
+                ? "Yes"
+                : "No"}
+            </p>
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Latency:
+              </span>{" "}
+              {data.latency}
+            </p>
+
+          </div>
+
           <pre className="bg-black p-4 rounded-lg overflow-auto text-sm text-green-300">
 
             {JSON.stringify(
@@ -37,6 +65,34 @@ export default function ResponseCard({
           <h2 className="text-red-400 text-2xl font-bold mb-4">
             ❌ Validation Error
           </h2>
+
+          <div className="space-y-2 mb-5 text-sm">
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Attempts:
+              </span>{" "}
+              {data.attempts}
+            </p>
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Correction Needed:
+              </span>{" "}
+
+              {data.correctionNeeded
+                ? "Yes"
+                : "No"}
+            </p>
+
+            <p>
+              <span className="font-bold text-yellow-300">
+                Latency:
+              </span>{" "}
+              {data.latency}
+            </p>
+
+          </div>
 
           <pre className="bg-black p-4 rounded-lg overflow-auto text-sm text-red-300">
 

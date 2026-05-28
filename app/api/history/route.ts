@@ -1,11 +1,8 @@
-import { NextResponse }
-from "next/server";
+import { NextResponse } from "next/server";
 
-import connectDB
-from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 
-import Validation
-from "@/database/Validation";
+import Validation from "@/database/Validation";
 
 export async function GET() {
 
@@ -15,14 +12,20 @@ export async function GET() {
 
     const history =
       await Validation.find()
-      .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 });
 
     return NextResponse.json(
       history
     );
 
-  } catch (error) {
+  } catch (error: any) {
 
-    return NextResponse.json([]);
+    console.log(error);
+
+    return NextResponse.json({
+      success: false,
+      message:
+        error.message,
+    });
   }
 }

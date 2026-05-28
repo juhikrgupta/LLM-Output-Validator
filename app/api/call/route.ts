@@ -1,21 +1,14 @@
-import { NextResponse }
-from "next/server";
+import { NextResponse } from "next/server";
 
-import { openrouter }
-from "@/lib/openrouter";
+import { openrouter } from "@/lib/openrouter";
 
-import { schemaRegistry }
-from "@/lib/schemaRegistry";
+import { schemaRegistry } from "@/lib/schemaRegistry";
 
-import connectDB
-from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 
-import Validation
-from "@/database/Validation";
+import Validation from "@/database/Validation";
 
-function getSchemaExample(
-  schema: string
-) {
+function getSchemaExample(schema: string) {
 
   if (schema === "user") {
 
@@ -35,6 +28,7 @@ function getSchemaExample(
 {
   "productName": "Laptop",
   "price": 50000,
+  "category": "Electronics",
   "inStock": true
 }
 `;
@@ -45,8 +39,10 @@ function getSchemaExample(
     return `
 {
   "name": "Rahul",
+  "age": 28,
   "department": "IT",
-  "salary": 70000
+  "salary": 70000,
+  "isActive": true
 }
 `;
   }
@@ -54,19 +50,17 @@ function getSchemaExample(
   return "{}";
 }
 
-export async function POST(
-  req: Request
-) {
+export async function POST(req: Request) {
+
+  const startTime = Date.now();
 
   try {
 
     await connectDB();
 
-    const body =
-      await req.json();
+    const body = await req.json();
 
-    const prompt =
-      body.prompt;
+    const prompt = body.prompt;
 
     const schema =
       body.schema || "user";
@@ -76,7 +70,15 @@ export async function POST(
         schema as keyof typeof schemaRegistry
       ];
 
-    const completion =
+    let attempts = 1;
+
+    let correctionNeeded = false;
+
+    const MAX_ATTEMPTS = 3;
+
+    // INITIAL LLM CALL
+
+    let completion =
       await openrouter.chat.completions.create({
 
         model:
@@ -101,20 +103,106 @@ ${prompt}
         ],
       });
 
-    const output =
+    let output =
       completion.choices[0]
-      .message.content;
+        .message.content;
 
-    const cleaned = output
+    let cleaned = output
       ?.replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
-    const parsed =
-      JSON.parse(cleaned || "{}");
+    let parsed;
 
-    const validated =
+    try {
+
+      parsed =
+        JSON.parse(cleaned || "{}");
+
+    } catch {
+
+      parsed = {};
+    }
+
+    let validated =
       selectedSchema.safeParse(parsed);
+
+    // RETRY LOGIC
+
+    while (
+      !validated.success &&
+      attempts < MAX_ATTEMPTS
+    ) {
+
+      correctionNeeded = true;
+
+      attempts++;
+
+      const correctionPrompt = `
+Your previous response failed validation.
+
+Validation Errors:
+
+${JSON.stringify(
+  validated.error.issues,
+  null,
+  2
+)}
+
+Expected JSON Format:
+
+${getSchemaExample(schema)}
+
+Previous Invalid Response:
+
+${JSON.stringify(parsed, null, 2)}
+
+Return ONLY corrected valid JSON.
+`;
+
+      completion =
+        await openrouter.chat.completions.create({
+
+          model:
+            "openai/gpt-3.5-turbo",
+
+          messages: [
+            {
+              role: "user",
+
+              content:
+                correctionPrompt,
+            },
+          ],
+        });
+
+      output =
+        completion.choices[0]
+          .message.content;
+
+      cleaned = output
+        ?.replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+      try {
+
+        parsed =
+          JSON.parse(cleaned || "{}");
+
+      } catch {
+
+        parsed = {};
+      }
+
+      validated =
+        selectedSchema.safeParse(parsed);
+    }
+
+    const latency =
+      `${Date.now() - startTime}ms`;
+
+    // SUCCESS
 
     if (validated.success) {
 
@@ -122,10 +210,18 @@ ${prompt}
 
         prompt,
 
+        schema,
+
         response:
           validated.data,
 
         success: true,
+
+        attempts,
+
+        correctionNeeded,
+
+        latency,
       });
 
       return NextResponse.json({
@@ -134,24 +230,57 @@ ${prompt}
 
         data:
           validated.data,
+
+        attempts,
+
+        correctionNeeded,
+
+        latency,
       });
     }
+
+    // FAILURE
 
     await Validation.create({
 
       prompt,
 
+      schema,
+
       response: parsed,
 
       success: false,
+
+      attempts,
+
+      correctionNeeded,
+
+      latency,
+
+      errors:
+        validated.error.issues,
     });
 
     return NextResponse.json({
 
       success: false,
 
-      errors:
-        validated.error.issues,
+      message:
+        "Validation failed after retries",
+
+errors:
+  validated.error.issues.map(
+    (issue) => ({
+      path: issue.path,
+      message: issue.message,
+    })
+  ),
+
+      attempts,
+
+      correctionNeeded,
+
+      latency,
     });
 
   } catch (error: any) {

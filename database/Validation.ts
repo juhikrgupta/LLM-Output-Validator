@@ -1,17 +1,51 @@
 import mongoose from "mongoose";
 
 const ValidationSchema =
-  new mongoose.Schema({
+  new mongoose.Schema(
 
-    prompt: String,
+    {
+      prompt: {
+        type: String,
+      },
 
-    response: Object,
+      schema: {
+        type: String,
+      },
 
-    success: Boolean,
+      response: {
+        type: Object,
+      },
 
-  }, {
-    timestamps: true,
-  });
+      success: {
+        type: Boolean,
+      },
+
+      attempts: {
+        type: Number,
+        default: 1,
+      },
+
+      correctionNeeded: {
+        type: Boolean,
+        default: false,
+      },
+
+      latency: {
+        type: String,
+      },
+
+      errors: [
+        {
+          path: [String],
+          message: String,
+        },
+      ],
+    },
+
+    {
+      timestamps: true,
+    }
+  );
 
 export default
   mongoose.models.Validation ||

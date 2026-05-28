@@ -28,6 +28,9 @@ export default function Home() {
   const [history, setHistory] =
     useState<any[]>([]);
 
+  const [failures, setFailures] =
+    useState<any[]>([]);
+
   const [loading, setLoading] =
     useState(false);
 
@@ -36,20 +39,53 @@ export default function Home() {
       useState("user");
 
   useEffect(() => {
+
     fetchHistory();
+
+    fetchFailures();
+
   }, []);
 
-  async function fetchHistory() {
+ async function fetchHistory() {
+
+  try {
+
+    const res =
+      await fetch("/api/history");
+
+    const data =
+      await res.json();
+
+    if (Array.isArray(data)) {
+
+      setHistory(data);
+
+    } else {
+
+      setHistory([]);
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    setHistory([]);
+  }
+}
+
+  async function fetchFailures() {
 
     try {
 
       const res =
-        await fetch("/api/history");
+        await fetch("/api/failures");
 
       const data =
         await res.json();
 
-      setHistory(data);
+      setFailures(
+        data.failures || []
+      );
 
     } catch (error) {
 
@@ -88,6 +124,8 @@ export default function Home() {
       setResponse(data);
 
       fetchHistory();
+
+      fetchFailures();
 
     } catch (error) {
 
@@ -160,6 +198,8 @@ export default function Home() {
           <ResponseCard data={response} />
         )}
 
+        {/* VALIDATION HISTORY */}
+
         <div className="mt-10">
 
           <h2 className="text-3xl font-bold mb-6">
@@ -169,7 +209,10 @@ export default function Home() {
           <div className="space-y-6">
 
             {history.map(
-              (item: any, index: number) => (
+              (
+                item: any,
+                index: number
+              ) => (
 
                 <div
 
@@ -178,15 +221,108 @@ export default function Home() {
                   className="border border-gray-700 rounded-xl p-5 bg-[#111]"
                 >
 
+                  <div className="space-y-2 mb-4">
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Prompt:
+                      </span>{" "}
+                      {item.prompt}
+                    </p>
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Schema:
+                      </span>{" "}
+                      {item.schema}
+                    </p>
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Status:
+                      </span>{" "}
+
+                      {item.success
+                        ? "✅ Success"
+                        : "❌ Failed"}
+                    </p>
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Attempts:
+                      </span>{" "}
+                      {item.attempts}
+                    </p>
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Correction Needed:
+                      </span>{" "}
+
+                      {item.correctionNeeded
+                        ? "Yes"
+                        : "No"}
+                    </p>
+
+                    <p>
+                      <span className="text-yellow-300 font-semibold">
+                        Latency:
+                      </span>{" "}
+                      {item.latency}
+                    </p>
+
+                  </div>
+
+                  <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-green-300">
+
+                    {JSON.stringify(
+                      item.response,
+                      null,
+                      2
+                    )}
+
+                  </pre>
+
+                </div>
+              )
+            )}
+
+          </div>
+
+        </div>
+
+        {/* FAILURE ANALYSIS */}
+
+        <div className="mt-10">
+
+          <h2 className="text-3xl font-bold mb-6 text-red-400">
+            Failure Analysis
+          </h2>
+
+          <div className="space-y-6">
+
+            {failures.map(
+              (
+                item: any,
+                index: number
+              ) => (
+
+                <div
+
+                  key={index}
+
+                  className="border border-red-500 rounded-xl p-5 bg-red-950"
+                >
+
                   <p className="text-yellow-300 font-semibold mb-2">
                     Prompt:
                   </p>
 
-                  <p className="mb-4 text-gray-300">
+                  <p className="mb-4 text-white">
                     {item.prompt}
                   </p>
 
-                  <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-green-300">
+                  <pre className="bg-black p-4 rounded-lg overflow-x-auto text-sm text-red-300">
 
                     {JSON.stringify(
                       item.response,
